@@ -1,0 +1,14 @@
+menu "App WiFi"
+    config APP_WIFI_SSID
+        string "WiFi SSID (2.4 GHz only)"
+        default ""
+    config APP_WIFI_PASSWORD
+        string "WiFi password"
+        default ""
+    config APP_TIMEZONE
+        string "POSIX TZ string for the clock"
+        default "UTC0"
+        help
+            Examples: SGT-8 (Singapore), CST-8 (China), JST-9, PST8PDT,M3.2.0,M11.1.0,
+            CET-1CEST,M3.5.0,M10.5.0/3. Note POSIX sign is inverted vs UTC offset.
+endmenu

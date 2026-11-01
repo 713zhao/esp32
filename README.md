@@ -14,3 +14,14 @@ idf.py menuconfig            # App WiFi -> SSID / password (stored in sdkconfig,
 idf.py -p /dev/ttyACM0 build flash monitor
 python3 tools/espchat.py send "Hello" --replies Hi Bye
 ```
+
+## skills/esp32c6 — Claude Code skill
+Teaches Claude Code how to operate this board: toolchain setup, port detection, build/flash,
+non-interactive serial logs, WiFi config, LVGL UI recipes, debugging (backtraces, core dumps,
+GDB over USB-JTAG), backup/restore, plus two project templates (basic touch UI, LAN chat).
+
+Install (symlink so `git pull` updates it):
+```bash
+ln -s "$PWD/skills/esp32c6" ~/.claude/skills/esp32c6
+~/.claude/skills/esp32c6/scripts/setup-idf.sh      # installs ESP-IDF v5.5.6 for esp32c6
+```

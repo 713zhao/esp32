@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ESP32 Chat</title>
+<style>
+:root{--bg:#0f1720;--card:#1b2530;--in:#243243;--out:#1f6feb;--fg:#e6edf3;--mut:#7d8590}
+@media (prefers-color-scheme: light){:root{--bg:#f6f8fa;--card:#fff;--in:#e7ecf2;--out:#1f6feb;--fg:#1f2328;--mut:#59636e}}
+*{box-sizing:border-box}body{margin:0;font:15px system-ui,sans-serif;background:var(--bg);color:var(--fg);display:flex;flex-direction:column;height:100dvh}
+header{padding:10px 16px;background:var(--card);display:flex;gap:8px;align-items:center}
+header b{flex:1}header input{width:110px}
+#log{flex:1;overflow:auto;padding:12px 16px;display:flex;flex-direction:column;gap:6px}
+.m{max-width:80%;padding:7px 11px;border-radius:14px;white-space:pre-wrap;word-wrap:break-word}
+.me{align-self:flex-end;background:var(--in)}.dev{align-self:flex-start;background:var(--out);color:#fff}
+.meta{font-size:11px;opacity:.75;margin-bottom:2px}
+form{display:flex;flex-direction:column;gap:6px;padding:10px 16px;background:var(--card)}
+.row{display:flex;gap:6px}input{flex:1;padding:9px;border-radius:8px;border:1px solid var(--mut);background:var(--bg);color:var(--fg);font:inherit;min-width:0}
+button{padding:9px 16px;border:0;border-radius:8px;background:var(--out);color:#fff;font:inherit}
+small{color:var(--mut)}
+</style></head><body>
+<header><b>ESP32 Chat</b><small>name</small><input id="from" maxlength="23"></header>
+<div id="log"></div>
+<form id="f">
+  <div class="row"><input id="text" placeholder="Message to the board" maxlength="255" autocomplete="off" required><button>Send</button></div>
+  <input id="replies" placeholder="Quick replies, comma separated (optional) e.g. Yes, No, Later">
+</form>
+<script>
+const $=id=>document.getElementById(id), log=$('log');
+let since=0;
+const tok=new URLSearchParams(location.search).get('token')||'';
+const hdr=tok?{'X-Token':tok}:{};
+try{$('from').value=localStorage.getItem('from')||'Phone'}catch(e){$('from').value='Phone'}
+$('from').onchange=()=>{try{localStorage.setItem('from',$('from').value)}catch(e){}};
+function add(m){
+  const d=document.createElement('div');
+  // "in" = sent to the board (by any LAN device) -> right side here; "out" = typed on the board -> left
+  d.className='m '+(m.dir==='in'?'me':'dev');
+  const meta=document.createElement('div');meta.className='meta';
+  meta.textContent=(m.dir==='in'?m.from:'Board')+(m.ts?' · '+new Date(m.ts*1000).toLocaleTimeString():'');
+  d.append(meta,document.createTextNode(m.text));log.append(d);log.scrollTop=log.scrollHeight;
+}
+async function poll(){
+  try{const r=await fetch('/api/messages?since='+since+(tok?'&token='+encodeURIComponent(tok):''));
+    const j=await r.json();(j.messages||[]).forEach(add);since=j.last??since;}catch(e){}
+  setTimeout(poll,1000);
+}
+$('f').onsubmit=async e=>{e.preventDefault();
+  const replies=$('replies').value.split(',').map(s=>s.trim()).filter(Boolean).slice(0,4);
+  await fetch('/api/message',{method:'POST',headers:{'Content-Type':'application/json',...hdr},
+    body:JSON.stringify({from:$('from').value||'Phone',text:$('text').value,replies})});
+  $('text').value='';
+};
+poll();
+</script></body></html>

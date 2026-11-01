@@ -1,0 +1,25 @@
+# --- ESP-IDF build output ---
+build/
+managed_components/
+*.bin
+*.elf
+*.map
+
+# --- Local config: contains WiFi SSID/password and chat token. NEVER commit. ---
+sdkconfig
+sdkconfig.old
+*.secrets
+.env
+
+# --- Flash backups (8 MB images of the board; keep locally / private storage) ---
+**/backups/*.bin
+**/backups/*.sha256
+
+# --- Python / editors / OS ---
+__pycache__/
+*.pyc
+.venv/
+.vscode/
+.idea/
+.DS_Store
+*.swp

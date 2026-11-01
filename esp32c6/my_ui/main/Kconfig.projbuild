@@ -1,0 +1,28 @@
+menu "App WiFi"
+    config APP_WIFI_SSID
+        string "WiFi SSID (2.4 GHz only)"
+        default ""
+    config APP_WIFI_PASSWORD
+        string "WiFi password"
+        default ""
+    config APP_TIMEZONE
+        string "POSIX TZ string for the clock"
+        default "UTC0"
+        help
+            Examples: SGT-8 (Singapore), CST-8 (China), JST-9, PST8PDT,M3.2.0,M11.1.0,
+            CET-1CEST,M3.5.0,M10.5.0/3. Note POSIX sign is inverted vs UTC offset.
+endmenu
+
+menu "App Chat"
+    config APP_CHAT_NAME
+        string "Device display name"
+        default "ESP32 Chat"
+    config APP_CHAT_HOSTNAME
+        string "mDNS hostname (<name>.local)"
+        default "esp32-chat"
+    config APP_CHAT_TOKEN
+        string "Shared token (empty = no auth on LAN)"
+        default ""
+        help
+            If set, clients must send header X-Token: <token> (or ?token=<token>).
+endmenu
